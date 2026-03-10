@@ -1,0 +1,7 @@
+Impact 5/5: Genre fingerprint map shows where popularity clusters by mood. Among top-20 genres by median popularity, 30.0% sit in the high-energy/high-valence quadrant.
+Impact 4/5: Highest median popularity appears around danceability (0.9, 1.0] and energy (0.2, 0.3].
+Impact 3/5: Artist consistency map highlights 'Bad Bunny' as a high-popularity, low-volatility standout (mean=87.1, std=6.0).
+Impact 2/5: Higher-performing tracks tend to center around tempo ~120 BPM and loudness ~-5.9 dB.
+Impact 1/5: The duration sweet spot appears near 3.75 minutes with peak median popularity 38.0.
+Additional: Genre popularity spread (top 15 genres) shows 'pop' with the highest median popularity (66.0), while 'pop' has the widest interquartile spread (69.0).
+Additional: Explicit vs non-explicit comparison indicates Explicit tracks have higher median popularity by 3.0 points overall.

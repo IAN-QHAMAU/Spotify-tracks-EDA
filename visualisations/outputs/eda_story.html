@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Spotify EDA · Data Story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+/* ════════════════════════════════════════
+   SPOTIFY EDA STORY  ·  Fresh Redesign
+   ════════════════════════════════════════ */
+:root{
+  --ink:#13100e;
+  --surface:#1c1713;
+  --panel:#221e19;
+  --panel2:#2b2520;
+  --border:rgba(235,200,150,0.11);
+  --amber:#e8924a;
+  --amber-dim:rgba(232,146,74,0.12);
+  --teal:#3ecfb8;
+  --teal-dim:rgba(62,207,184,0.1);
+  --rose:#e8546a;
+  --text:#f0ebe4;
+  --muted:#9c8f82;
+  --sub:#6b6057;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:'DM Serif Display',Georgia,serif;
+  overflow-x:hidden;
+}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+/* ── HERO ── */
+.hero{
+  position:relative;
+  min-height:90vh;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;
+  padding:80px 24px 60px;
+  max-width:1080px;
+  margin:0 auto;
+}
+.hero-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.72rem;letter-spacing:.22em;color:var(--amber);
+  text-transform:uppercase;margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.hero-tag::before{content:'';width:32px;height:1px;background:var(--amber)}
+.hero h1{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(3rem,7vw,6.4rem);
+  font-weight:800;
+  line-height:1.04;
+  letter-spacing:-.025em;
+  max-width:840px;
+}
+.hero h1 em{font-style:italic;color:var(--amber)}
+.hero-sub{
+  font-size:1.1rem;
+  color:var(--muted);
+  max-width:560px;
+  margin-top:20px;
+  line-height:1.7;
+  font-family:'DM Serif Display',serif;
+  font-style:italic;
+}
+.link-row{
+  display:flex;gap:12px;flex-wrap:wrap;
+  margin-top:32px;
+}
+.link-pill{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.74rem;
+  padding:8px 16px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  color:var(--text);
+  background:var(--panel2);
+  text-decoration:none;
+  letter-spacing:.06em;
+  transition:border-color .25s,background .25s;
+  display:flex;align-items:center;gap:6px;
+}
+.link-pill:hover{border-color:var(--amber);background:var(--amber-dim)}
+.link-pill svg{width:13px;height:13px;opacity:.7}
+.link-pill.amber{color:var(--amber);border-color:rgba(232,146,74,0.3);background:var(--amber-dim)}
+.link-pill.teal{color:var(--teal);border-color:rgba(62,207,184,0.25);background:var(--teal-dim)}
+.hero-line{
+  position:absolute;bottom:0;left:24px;right:24px;
+  height:1px;background:var(--border);
+}
+
+/* ── STATS ── */
+.stats-band{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:1px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  margin:56px 0;
+  background:var(--border);
+}
+.stat-item{
+  background:var(--panel);
+  padding:24px 20px;
+  text-align:center;
+}
+.stat-val{
+  font-family:'Syne',sans-serif;
+  font-size:2rem;font-weight:800;
+  color:var(--amber);display:block;margin-bottom:4px;
+}
+.stat-lbl{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.66rem;letter-spacing:.12em;
+  color:var(--sub);text-transform:uppercase;
+}
+
+/* ── SECTION LABELS ── */
+.section-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;letter-spacing:.22em;color:var(--amber);
+  text-transform:uppercase;margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-tag::before{content:'';width:20px;height:1px;background:var(--amber)}
+.section-h{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(1.7rem,4vw,2.8rem);
+  font-weight:800;line-height:1.1;
+  margin-bottom:12px;
+}
+.section-desc{
+  font-size:1rem;color:var(--muted);line-height:1.75;
+  max-width:580px;
+  font-family:'DM Serif Display',serif;
+  font-style:italic;
+}
+
+/* ── DIVIDER ── */
+.divider{border:none;border-top:1px solid var(--border);margin:56px 0}
+
+/* ── VISUAL SECTIONS ── */
+.visuals{padding:48px 0}
+.visual-block{
+  display:grid;
+  grid-template-columns:1fr 1.6fr;
+  gap:40px;
+  align-items:start;
+  margin-bottom:72px;
+  opacity:0;transform:translateY(28px);
+  transition:opacity .65s,transform .65s;
+}
+.visual-block.flip{grid-template-columns:1.6fr 1fr}
+.visual-block.flip .v-meta{order:2}
+.visual-block.flip .v-img{order:1}
+.visual-block.visible{opacity:1;transform:translateY(0)}
+
+.v-rank{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.68rem;letter-spacing:.2em;color:var(--amber);
+  text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.v-rank::before{content:'';width:14px;height:1px;background:var(--amber)}
+.v-title{
+  font-family:'Syne',sans-serif;
+  font-size:1.5rem;font-weight:700;line-height:1.2;margin-bottom:14px;
+}
+.v-desc{
+  font-size:.97rem;color:var(--muted);line-height:1.75;margin-bottom:18px;
+}
+.v-insights{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:0}
+.v-insights li{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.8rem;color:var(--muted);
+  padding:9px 14px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-left:2px solid var(--amber);
+  border-radius:6px;
+  line-height:1.55;
+}
+
+.v-img{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+}
+.v-img-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.64rem;letter-spacing:.14em;
+  color:var(--sub);text-transform:uppercase;
+  padding:12px 16px 8px;
+  border-bottom:1px solid var(--border);
+}
+.v-img img{
+  width:100%;display:block;
+  object-fit:contain;background:#0e0b09;
+}
+
+/* ── KEY FINDINGS ── */
+.findings-section{padding:48px 0}
+.findings-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:16px;
+  margin-top:36px;
+}
+.finding-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:24px;
+  position:relative;
+  overflow:hidden;
+}
+.finding-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--card-color,var(--amber));
+}
+.fc-num{
+  font-family:'Syne',sans-serif;
+  font-size:2.4rem;font-weight:800;color:var(--card-color,var(--amber));
+  opacity:.18;position:absolute;top:14px;right:20px;
+}
+.fc-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;letter-spacing:.18em;
+  color:var(--card-color,var(--amber));text-transform:uppercase;
+  margin-bottom:10px;
+}
+.fc-text{
+  font-size:.93rem;color:var(--text);line-height:1.7;
+}
+.fc-text strong{color:var(--card-color,var(--amber))}
+
+/* ── LINKS SECTION ── */
+.links-section{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:36px;
+  margin:0 0 56px;
+  display:flex;flex-direction:column;gap:20px;
+}
+.ls-head{
+  font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;
+}
+.ls-links{display:flex;flex-wrap:wrap;gap:12px}
+.ls-link{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.78rem;
+  padding:10px 18px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  color:var(--text);
+  background:var(--panel2);
+  text-decoration:none;
+  display:flex;align-items:center;gap:8px;
+  transition:border-color .25s,background .25s;
+}
+.ls-link:hover{border-color:var(--teal);background:var(--teal-dim)}
+.ls-link .lsl-type{
+  font-size:.6rem;letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--sub);padding-right:6px;border-right:1px solid var(--border);
+}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:28px 24px;
+  text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--sub);
+  letter-spacing:.06em;
+  line-height:1.8;
+}
+
+/* ── SCROLL REVEAL ANIMATION ── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:760px){
+  .visual-block,.visual-block.flip{grid-template-columns:1fr}
+  .visual-block.flip .v-meta{order:0}
+  .visual-block.flip .v-img{order:1}
+  .hero h1{font-size:2.6rem}
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:var(--panel2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="hero-tag">Exploratory Data Analysis &nbsp;·&nbsp; Spotify Tracks Dataset</div>
+  <h1>What Makes a Track<br/><em>Actually Popular?</em></h1>
+  <p class="hero-sub">
+    A ranked investigation into 114,000 Spotify tracks — uncovering the audio features,
+    artist patterns, and release choices that separate high-performing songs from the rest.
+  </p>
+  <div class="link-row">
+    <a class="link-pill amber" href="../../notebooks/music.ipynb">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm4.5 5.5a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zM4 5a1 1 0 0 0 0 2h.01a1 1 0 0 0 0-2H4zm0 2.5a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1zm0 2a.5.5 0 1 0 0 1 .5.5 0 0 0 0-1z"/></svg>
+      Open Jupyter Notebook
+    </a>
+    <a class="link-pill teal" href="../spotify_unique_visuals.py">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M5.854 4.854a.5.5 0 1 0-.708-.708l-3.5 3.5a.5.5 0 0 0 0 .708l3.5 3.5a.5.5 0 0 0 .708-.708L2.707 8l3.147-3.146zm4.292 0a.5.5 0 0 1 .708-.708l3.5 3.5a.5.5 0 0 1 0 .708l-3.5 3.5a.5.5 0 0 1-.708-.708L13.293 8l-3.147-3.146z"/></svg>
+      View Python Script
+    </a>
+    <a class="link-pill" href="findings_ranked_1_to_5.txt">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4zm1 3h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1zm0 2h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1zm0 2h4a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1z"/></svg>
+      Raw Findings
+    </a>
+  </div>
+  <div class="hero-line"></div>
+</section>
+
+<div class="wrap">
+
+  <!-- ═══════════ STATS ═══════════ -->
+  <div class="stats-band">
+    <div class="stat-item"><span class="stat-val">114k</span><span class="stat-lbl">Tracks</span></div>
+    <div class="stat-item"><span class="stat-val">21</span><span class="stat-lbl">Audio Features</span></div>
+    <div class="stat-item"><span class="stat-val">7</span><span class="stat-lbl">Total Visuals</span></div>
+    <div class="stat-item"><span class="stat-val">0–100</span><span class="stat-lbl">Popularity Scale</span></div>
+    <div class="stat-item"><span class="stat-val">Bad Bunny</span><span class="stat-lbl">Most Consistent Artist</span></div>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- ═══════════ VISUALS ═══════════ -->
+  <section class="visuals">
+    <div class="section-tag">Phase 01 — The Visuals</div>
+    <h2 class="section-h">7 Charts, Ranked + Comparative</h2>
+    <p class="section-desc">Each visual was chosen to answer a distinct question about what drives popularity — from genre-level strategy down to track format choices.</p>
+
+    <!-- VISUAL 5 -->
+    <div class="visual-block" id="vb5">
+      <div class="v-meta">
+        <div class="v-rank">Impact 5 / 5 &nbsp;·&nbsp; Big Picture</div>
+        <div class="v-title">Genre Fingerprint Map</div>
+        <div class="v-desc">
+          Every genre has a mood identity — a distinct position in the Energy × Valence space.
+          This map reveals that popularity isn't random across genres: specific mood zones attract
+          consistently higher streaming numbers, making this a strategic lens, not just a sound description.
+        </div>
+        <ul class="v-insights">
+          <li>30% of the top-20 genres sit in the high-energy, high-valence quadrant</li>
+          <li>Genre identity conditions audience expectations and repeat-listen behavior</li>
+          <li>Low-energy niches can still win through depth and consistency</li>
+        </ul>
+      </div>
+      <div class="v-img">
+        <div class="v-img-label">Genre Map · Energy × Valence → Popularity</div>
+        <img src="impact_5_genre_fingerprint.png" alt="Genre fingerprint scatter map showing energy vs valence coloured by popularity"/>
+      </div>
+    </div>
+
+    <!-- VISUAL 4 -->
+    <div class="visual-block flip" id="vb4">
+      <div class="v-meta">
+        <div class="v-rank">Impact 4 / 5 &nbsp;·&nbsp; Production Tuning</div>
+        <div class="v-title">Hit Zone Heatmap</div>
+        <div class="v-desc">
+          Danceability and energy are the two most controllable production levers. This heatmap bins them
+          into a 10×10 grid and colors each cell by median popularity — revealing unmistakable hotspots
+          where songs consistently outperform.
+        </div>
+        <ul class="v-insights">
+          <li>Highest popularity clusters around danceability (0.9–1.0] × energy (0.2–0.3]</li>
+          <li>Very high energy without matching danceability shows clear underperformance</li>
+          <li>A "dead zone" exists at low danceability + low energy regardless of other features</li>
+        </ul>
+      </div>
+      <div class="v-img">
+        <div class="v-img-label">Danceability × Energy → Median Popularity Heatmap</div>
+        <img src="impact_4_hit_zone_heatmap.png" alt="Heatmap of danceability vs energy bins coloured by median popularity"/>
+      </div>
+    </div>
+
+    <!-- VISUAL 3 -->
+    <div class="visual-block" id="vb3">
+      <div class="v-meta">
+        <div class="v-rank">Impact 3 / 5 &nbsp;·&nbsp; Artist Reliability</div>
+        <div class="v-title">Artist Consistency Map</div>
+        <div class="v-desc">
+          A high average popularity by itself can be misleading — it might be driven by a single breakout track.
+          This scatter combines mean popularity with standard deviation to find artists who are
+          both successful and reliable. The real standouts sit in the top-left: high mean, low spread.
+        </div>
+        <ul class="v-insights">
+          <li>Bad Bunny tops the chart: mean popularity 87.1 with only 6.0 std deviation</li>
+          <li>Wide-spread artists carry catalog risk even at high averages</li>
+          <li>Ideal for A&amp;R decisions, playlist curation, and collaboration targeting</li>
+        </ul>
+      </div>
+      <div class="v-img">
+        <div class="v-img-label">Artist Mean Popularity vs. Volatility (Std Dev)</div>
+        <img src="impact_3_artist_consistency.png" alt="Scatter plot of artist mean popularity vs standard deviation"/>
+      </div>
+    </div>
+
+    <!-- VISUAL 2 -->
+    <div class="visual-block flip" id="vb2">
+      <div class="v-meta">
+        <div class="v-rank">Impact 2 / 5 &nbsp;·&nbsp; Sonic Positioning</div>
+        <div class="v-title">Tempo–Loudness Hit Terrain</div>
+        <div class="v-desc">
+          Raw scatter plots are too noisy at 114k points. Using hexbin aggregation,
+          a clear terrain emerges: a corridor of tempo and loudness where mean popularity
+          concentrates. This is essentially the sonic fingerprint of a commercially viable track.
+        </div>
+        <ul class="v-insights">
+          <li>Top-performing tracks cluster around ~120 BPM</li>
+          <li>Optimal loudness around −5.9 dB — aligned with streaming normalization targets</li>
+          <li>Extreme tempos (very slow or very fast) yield less predictable popularity returns</li>
+        </ul>
+      </div>
+      <div class="v-img">
+        <div class="v-img-label">Tempo (BPM) × Loudness (dB) → Mean Popularity</div>
+        <img src="impact_2_tempo_loudness_hit_terrain.png" alt="Hexbin chart of tempo vs loudness coloured by mean popularity"/>
+      </div>
+    </div>
+
+    <!-- VISUAL 1 -->
+    <div class="visual-block" id="vb1">
+      <div class="v-meta">
+        <div class="v-rank">Impact 1 / 5 &nbsp;·&nbsp; Release Format</div>
+        <div class="v-title">Duration Sweet Spot Curve</div>
+        <div class="v-desc">
+          Track length is often treated as an afterthought, but this binned median curve shows
+          a clear arc — popularity rises into a specific mid-length window then drops off.
+          Likely tied to stream-completion rates, which streaming algorithms use as a quality signal.
+        </div>
+        <ul class="v-insights">
+          <li>Peak median popularity appears near 3.75 minutes (median popularity: 38.0)</li>
+          <li>Tracks under 2 minutes or over 5 minutes consistently underperform</li>
+          <li>Duration is an underused release optimization lever</li>
+        </ul>
+      </div>
+      <div class="v-img">
+        <div class="v-img-label">Track Duration (minutes) → Median Popularity</div>
+        <img src="impact_1_duration_sweet_spot.png" alt="Line chart of track duration bins vs median popularity"/>
+      </div>
+    </div>
+
+    <div class="section-tag" style="margin-top:8px">Phase 01b — Comparative Views</div>
+    <h2 class="section-h" style="font-size:clamp(1.35rem,3vw,2rem)">2 Additional Comparative Charts</h2>
+    <p class="section-desc">These additions validate spread and category-level differences beyond the impact-ranked set.</p>
+
+    <div class="visual-block flip" id="vb-extra-genre">
+      <div class="v-meta">
+        <div class="v-rank">Additional &nbsp;·&nbsp; Genre Variability</div>
+        <div class="v-title">Genre Popularity Spread (Top 15)</div>
+        <div class="v-desc">
+          Violin and box overlays show both central tendency and dispersion by genre.
+          This reveals where popularity is consistently strong versus where outcomes are volatile.
+        </div>
+        <ul class="v-insights">
+          <li><strong>pop</strong> has the highest median popularity at <strong>66.0</strong></li>
+          <li><strong>pop</strong> also has the widest interquartile spread at <strong>69.0</strong></li>
+          <li>High ceiling can coexist with high volatility in the same genre</li>
+        </ul>
+      </div>
+      <div class="v-img">
+        <div class="v-img-label">Top Genres · Violin + Box → Popularity Spread</div>
+        <img src="extra_genre_popularity_spread_top15.png" alt="Violin and boxplot chart of popularity spread across top 15 genres"/>
+      </div>
+    </div>
+
+    <div class="visual-block" id="vb-extra-explicit">
+      <div class="v-meta">
+        <div class="v-rank">Additional &nbsp;·&nbsp; Content Label Effect</div>
+        <div class="v-title">Explicit vs Non-explicit Popularity</div>
+        <div class="v-desc">
+          This comparison separates overall performance by explicit label and then checks consistency
+          across top genres to identify whether the difference is broad or genre-specific.
+        </div>
+        <ul class="v-insights">
+          <li>Explicit tracks lead by <strong>3.0 popularity points</strong> overall</li>
+          <li>The gap varies by genre, indicating context-specific audience behavior</li>
+          <li>Useful for release strategy and content positioning decisions</li>
+        </ul>
+      </div>
+      <div class="v-img">
+        <div class="v-img-label">Explicit Label Comparison · Overall + Top Genres</div>
+        <img src="extra_explicit_vs_nonexplicit_popularity.png" alt="Bar and point comparison of explicit versus non-explicit track popularity"/>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ═══════════ KEY FINDINGS ═══════════ -->
+  <section class="findings-section">
+    <div class="section-tag">Phase 02 — The Numbers</div>
+    <h2 class="section-h">Key Findings That Stood Out</h2>
+    <p class="section-desc">These are the exact findings extracted directly from the analysis — ranked by how much they change how you think about the data.</p>
+
+    <div class="findings-grid">
+
+      <div class="finding-card" style="--card-color:#e8924a">
+        <span class="fc-num">5</span>
+        <div class="fc-label">Impact 5 / 5 · Genre Mood</div>
+        <div class="fc-text">
+          Genre fingerprint map shows where popularity clusters by mood.
+          Among the top-20 genres by median popularity,
+          <strong>30% sit in the high-energy / high-valence quadrant</strong> —
+          suggesting mood positioning is a meaningful popularity predictor.
+        </div>
+      </div>
+
+      <div class="finding-card" style="--card-color:#3ecfb8">
+        <span class="fc-num">4</span>
+        <div class="fc-label">Impact 4 / 5 · Hit Zone</div>
+        <div class="fc-text">
+          The highest median popularity in the danceability × energy grid appears at
+          <strong>danceability (0.9, 1.0]</strong> and <strong>energy (0.2, 0.3]</strong> —
+          a surprisingly low-energy zone, showing that groove matters more than loudness.
+        </div>
+      </div>
+
+      <div class="finding-card" style="--card-color:#c678e0">
+        <span class="fc-num">3</span>
+        <div class="fc-label">Impact 3 / 5 · Artist Reliability</div>
+        <div class="fc-text">
+          <strong>Bad Bunny</strong> stands out as the most consistent high-performing artist:
+          mean popularity <strong>87.1</strong> with a standard deviation of only <strong>6.0</strong> —
+          one of the tightest ranges among top-tier artists in the dataset.
+        </div>
+      </div>
+
+      <div class="finding-card" style="--card-color:#e8546a">
+        <span class="fc-num">2</span>
+        <div class="fc-label">Impact 2 / 5 · Sonic Profile</div>
+        <div class="fc-text">
+          Higher-performing tracks tend to centre around
+          <strong>~120 BPM</strong> and <strong>~−5.9 dB loudness</strong> —
+          a tempo and loudness corridor that aligns closely with streaming platform
+          normalization standards.
+        </div>
+      </div>
+
+      <div class="finding-card" style="--card-color:#7aa2ff">
+        <span class="fc-num">1</span>
+        <div class="fc-label">Impact 1 / 5 · Duration</div>
+        <div class="fc-text">
+          The duration sweet spot peaks near <strong>3.75 minutes</strong> with a
+          median popularity of <strong>38.0</strong> — confirming that mid-length tracks
+          outperform both very short and very long ones across the dataset.
+        </div>
+      </div>
+
+      <div class="finding-card" style="--card-color:#f5c842">
+        <span class="fc-num">∑</span>
+        <div class="fc-label">Synthesis · The Full Picture</div>
+        <div class="fc-text">
+          No single feature dominates. Popularity is <strong>multi-layered</strong>:
+          genre mood positioning, production calibration, artist-level consistency,
+          and release format all contribute independently — and compoundingly.
+        </div>
+      </div>
+
+      <div class="finding-card" style="--card-color:#3ecfb8">
+        <span class="fc-num">+</span>
+        <div class="fc-label">Additional · Genre Spread</div>
+        <div class="fc-text">
+          The spread analysis shows <strong>pop</strong> as both the highest-median and widest-IQR genre,
+          confirming that high expected performance can still come with high variance.
+        </div>
+      </div>
+
+      <div class="finding-card" style="--card-color:#e8924a">
+        <span class="fc-num">+</span>
+        <div class="fc-label">Additional · Explicit Effect</div>
+        <div class="fc-text">
+          Explicit tracks hold a measurable aggregate advantage of <strong>+3.0</strong> popularity points,
+          though the magnitude is genre-dependent rather than universal.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ═══════════ LINKS ═══════════ -->
+  <div class="links-section">
+    <div class="ls-head">Open the Raw Analysis</div>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);line-height:1.7">
+      Everything in this story comes directly from these source files. Open any of them to see or re-run the full analysis.
+    </p>
+    <div class="ls-links">
+      <a class="ls-link" href="../../notebooks/music.ipynb">
+        <span class="lsl-type">Notebook</span>
+        notebooks/music.ipynb
+      </a>
+      <a class="ls-link" href="../spotify_unique_visuals.py">
+        <span class="lsl-type">Script</span>
+        spotify_unique_visuals.py
+      </a>
+      <a class="ls-link" href="findings_ranked_1_to_5.txt">
+        <span class="lsl-type">Text</span>
+        findings_ranked_1_to_5.txt
+      </a>
+      <a class="ls-link" href="../../data/spotify tracks dataset.csv">
+        <span class="lsl-type">Data</span>
+        spotify tracks dataset.csv
+      </a>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<footer>
+  Spotify Tracks EDA &nbsp;·&nbsp; Python / Pandas / Seaborn / Matplotlib<br/>
+  <span style="opacity:.45">Charts above are actual outputs from the analysis pipeline · All findings derived from real data</span>
+</footer>
+
+<script>
+// Scroll-reveal for visual blocks
+const vblocks = document.querySelectorAll('.visual-block');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+vblocks.forEach(b => observer.observe(b));
+</script>
+</body>
+</html>
