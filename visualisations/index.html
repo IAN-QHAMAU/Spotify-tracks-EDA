@@ -3,52 +3,573 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Spotify Tracks EDA</title>
+    <title>Spotify Tracks EDA Story</title>
     <style>
+      :root {
+        --bg: #07111f;
+        --panel: rgba(15, 23, 42, 0.78);
+        --panel-strong: rgba(15, 23, 42, 0.95);
+        --border: rgba(148, 163, 184, 0.18);
+        --text: #e5eef9;
+        --muted: #94a3b8;
+        --green: #22c55e;
+        --blue: #38bdf8;
+        --purple: #a78bfa;
+        --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        --radius: 24px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
       body {
-        font-family: Arial, sans-serif;
         margin: 0;
-        padding: 2rem;
+        font-family: Inter, Arial, sans-serif;
         line-height: 1.6;
-        background: #0f172a;
-        color: #e2e8f0;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(34, 197, 94, 0.18), transparent 26%),
+          radial-gradient(circle at top right, rgba(56, 189, 248, 0.16), transparent 28%),
+          linear-gradient(180deg, #020617 0%, #07111f 100%);
       }
-      .wrap {
-        max-width: 900px;
+
+      a {
+        color: var(--blue);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .shell {
+        width: min(1160px, calc(100% - 32px));
         margin: 0 auto;
+        padding: 24px 0 80px;
       }
-      h1 {
+
+      .topbar {
+        position: sticky;
+        top: 12px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 18px;
+        margin-bottom: 28px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(7, 17, 31, 0.72);
+        backdrop-filter: blur(14px);
+        box-shadow: var(--shadow);
+      }
+
+      .brand {
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+
+      .nav a {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.25fr 0.9fr;
+        gap: 24px;
+        align-items: stretch;
+        margin-bottom: 28px;
+      }
+
+      .card,
+      .story-block,
+      .metric,
+      .summary-box {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--panel);
+        backdrop-filter: blur(10px);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-copy {
+        padding: 36px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(34, 197, 94, 0.12);
+        color: #bbf7d0;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
         margin-top: 0;
       }
-      a {
-        color: #38bdf8;
+
+      h1 {
+        font-size: clamp(2.4rem, 5vw, 4.5rem);
+        line-height: 1.02;
+        margin: 18px 0 14px;
       }
-      ul {
-        padding-left: 1.2rem;
+
+      .lead {
+        font-size: 1.08rem;
+        color: #cbd5e1;
+        max-width: 62ch;
       }
-      .muted {
-        color: #94a3b8;
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 16px;
+        border-radius: 999px;
+        font-weight: 600;
+        border: 1px solid transparent;
+      }
+
+      .button.primary {
+        background: linear-gradient(135deg, var(--green), #14b8a6);
+        color: #031018;
+      }
+
+      .button.secondary {
+        border-color: var(--border);
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .hero-panel {
+        padding: 28px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .panel-title {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .takeaway {
+        padding: 18px 18px 16px;
+        border-radius: 18px;
+        background: rgba(148, 163, 184, 0.08);
+      }
+
+      .takeaway strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin: 26px 0 40px;
+      }
+
+      .metric {
+        padding: 22px;
+      }
+
+      .metric .label {
+        color: var(--muted);
+        font-size: 0.88rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .metric .value {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 8px 0 4px;
+      }
+
+      .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 18px;
+        margin: 40px 0 18px;
+      }
+
+      .section-heading p {
+        color: var(--muted);
+        max-width: 65ch;
+        margin-bottom: 0;
+      }
+
+      .story-grid {
+        display: grid;
+        gap: 20px;
+      }
+
+      .story-block {
+        overflow: hidden;
+      }
+
+      .story-copy {
+        padding: 28px 28px 18px;
+      }
+
+      .story-copy .rank {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(167, 139, 250, 0.14);
+        color: #ddd6fe;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .story-copy h3 {
+        margin: 14px 0 10px;
+        font-size: 1.6rem;
+      }
+
+      .story-copy p {
+        color: #d7e0ea;
+      }
+
+      .insight-list {
+        margin: 16px 0 0;
+        padding-left: 18px;
+        color: #cbd5e1;
+      }
+
+      figure {
+        margin: 0;
+        padding: 0 28px 28px;
+      }
+
+      figure img {
+        width: 100%;
+        display: block;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: #020617;
+      }
+
+      figcaption {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .summary-box {
+        padding: 28px;
+        margin-top: 34px;
+      }
+
+      .summary-box ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      footer {
+        color: var(--muted);
+        margin-top: 34px;
+        text-align: center;
+      }
+
+      @media (max-width: 960px) {
+        .hero,
+        .two-col,
+        .metrics {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          border-radius: 24px;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .shell {
+          width: min(100% - 20px, 1160px);
+          padding-top: 12px;
+        }
+
+        .hero-copy,
+        .hero-panel,
+        .story-copy,
+        .summary-box,
+        .metric {
+          padding: 22px;
+        }
+
+        figure {
+          padding: 0 22px 22px;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <h1>Spotify Tracks EDA</h1>
-      <p class="muted">Exploratory analysis of Spotify track features and popularity patterns.</p>
+    <div class="shell">
+      <div class="topbar">
+        <div class="brand">Spotify Tracks EDA Story</div>
+        <div class="nav">
+          <a href="#overview">Overview</a>
+          <a href="#ranked-insights">Ranked Insights</a>
+          <a href="#comparative">Comparatives</a>
+          <a href="#recommendations">Recommendations</a>
+        </div>
+      </div>
 
-      <h2>Visual Outputs</h2>
-      <ul>
-        <li><a href="outputs/impact_5_genre_fingerprint.png">Genre Fingerprint Map</a></li>
-        <li><a href="outputs/impact_4_hit_zone_heatmap.png">Hit Zone Heatmap</a></li>
-        <li><a href="outputs/impact_3_artist_consistency.png">Artist Consistency Map</a></li>
-        <li><a href="outputs/impact_2_tempo_loudness_hit_terrain.png">Tempo-Loudness Terrain</a></li>
-        <li><a href="outputs/impact_1_duration_sweet_spot.png">Duration Sweet Spot</a></li>
-        <li><a href="outputs/extra_genre_popularity_spread_top15.png">Genre Popularity Spread</a></li>
-        <li><a href="outputs/extra_explicit_vs_nonexplicit_popularity.png">Explicit vs Non-Explicit</a></li>
-        <li><a href="outputs/findings_ranked_1_to_5.txt">Ranked Findings (text)</a></li>
-      </ul>
+      <section class="hero" id="overview">
+        <div class="card hero-copy">
+          <div class="eyebrow">Data story • Spotify popularity</div>
+          <h1>What actually drives track popularity?</h1>
+          <p class="lead">
+            This page turns the full Spotify EDA into one scrollable story. Instead of opening separate files,
+            you can move from the core business question to the highest-impact visuals, then finish with
+            practical strategy takeaways.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#ranked-insights">Read the visual story</a>
+            <a class="button secondary" href="../README.md">Open project README</a>
+          </div>
+        </div>
 
-      <p><a href="../README.md">Back to README</a></p>
+        <div class="card hero-panel">
+          <div>
+            <div class="panel-title">Core question</div>
+            <p>Which combinations of genre, artist consistency, and audio features align with higher popularity?</p>
+          </div>
+          <div class="takeaway">
+            <strong>Top takeaway</strong>
+            Popularity is not random. The strongest patterns show up around genre mood clusters, high-fit danceability/energy zones, and a small set of artists who are both strong and consistent.
+          </div>
+          <div class="takeaway">
+            <strong>Practical angle</strong>
+            This analysis is useful for A&amp;R prioritization, production direction, and release planning rather than just descriptive charting.
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics">
+        <div class="metric">
+          <div class="label">Dataset size</div>
+          <div class="value">114k+</div>
+          <p>Tracks across many genres and artist profiles.</p>
+        </div>
+        <div class="metric">
+          <div class="label">Main visuals</div>
+          <div class="value">7</div>
+          <p>Five ranked impact visuals plus two comparative views.</p>
+        </div>
+        <div class="metric">
+          <div class="label">Key variables</div>
+          <div class="value">8+</div>
+          <p>Popularity, genre, artists, duration, tempo, loudness, danceability, energy, valence.</p>
+        </div>
+        <div class="metric">
+          <div class="label">Format</div>
+          <div class="value">1 page</div>
+          <p>A complete narrative page for viewers who want the whole story in one place.</p>
+        </div>
+      </section>
+
+      <div class="section-heading" id="ranked-insights">
+        <div>
+          <h2>Ranked insight story</h2>
+          <p>The sequence below follows the strongest explanatory signals first, so a reader gets the most important patterns before the lower-impact ones.</p>
+        </div>
+      </div>
+
+      <section class="story-grid">
+        <article class="story-block">
+          <div class="story-copy">
+            <div class="rank">Impact 5 / 5</div>
+            <h3>Genre fingerprint map</h3>
+            <p>
+              The clearest pattern in the project comes from the mood-position view of genres. Popularity clusters are easier to interpret when genre is mapped through <strong>energy</strong> and <strong>valence</strong> together rather than treated as a simple label list.
+            </p>
+            <ul class="insight-list">
+              <li>Among top-20 genres by median popularity, 30.0% fall in the high-energy, high-valence quadrant.</li>
+              <li>This suggests that upbeat, emotionally positive genre profiles often align with stronger popularity outcomes.</li>
+              <li>Genre works best here as a positioning signal, not just a category tag.</li>
+            </ul>
+          </div>
+          <figure>
+            <img src="outputs/impact_5_genre_fingerprint.png" alt="Genre fingerprint map showing popularity clusters by mood position" />
+            <figcaption>Popularity clusters become more explainable when genres are viewed by their mood fingerprint.</figcaption>
+          </figure>
+        </article>
+
+        <article class="story-block">
+          <div class="story-copy">
+            <div class="rank">Impact 4 / 5</div>
+            <h3>Hit zone heatmap</h3>
+            <p>
+              The heatmap narrows popularity into a more precise performance zone. Rather than saying "more energy is always better," it shows that the best results tend to happen in specific feature combinations.
+            </p>
+            <ul class="insight-list">
+              <li>The strongest median popularity appears around danceability $(0.9, 1.0]$ and energy $(0.2, 0.3]$.</li>
+              <li>That points to a highly danceable but not overly aggressive track profile.</li>
+              <li>The finding is more actionable than a basic pairwise correlation because it identifies a concentrated hit pocket.</li>
+            </ul>
+          </div>
+          <figure>
+            <img src="outputs/impact_4_hit_zone_heatmap.png" alt="Heatmap showing danceability and energy hit zones" />
+            <figcaption>This chart helps isolate the feature combinations most associated with stronger popularity.</figcaption>
+          </figure>
+        </article>
+
+        <article class="story-block">
+          <div class="story-copy">
+            <div class="rank">Impact 3 / 5</div>
+            <h3>Artist consistency map</h3>
+            <p>
+              Average popularity matters, but consistency matters too. This view highlights artists who combine high performance with lower volatility, which is valuable for repeatable decision-making.
+            </p>
+            <ul class="insight-list">
+              <li><strong>Bad Bunny</strong> stands out as a high-popularity, low-volatility performer with mean popularity 87.1 and standard deviation 6.0.</li>
+              <li>That profile is useful for identifying reliable rather than one-off success.</li>
+              <li>For talent strategy, this is a stronger signal than looking at a single hit track in isolation.</li>
+            </ul>
+          </div>
+          <figure>
+            <img src="outputs/impact_3_artist_consistency.png" alt="Artist consistency map showing average popularity and volatility" />
+            <figcaption>Consistency helps separate dependable performers from artists with spiky but less stable results.</figcaption>
+          </figure>
+        </article>
+
+        <article class="story-block">
+          <div class="story-copy">
+            <div class="rank">Impact 2 / 5</div>
+            <h3>Tempo–loudness terrain</h3>
+            <p>
+              This view adds a production-facing layer to the story. Higher-performing tracks cluster around a central sonic region rather than extreme values.
+            </p>
+            <ul class="insight-list">
+              <li>Stronger tracks tend to center around tempo near 120 BPM and loudness near -5.9 dB.</li>
+              <li>That suggests there is a commercially favorable sonic middle ground.</li>
+              <li>The insight is directional, not prescriptive, but it is useful for creative benchmarking.</li>
+            </ul>
+          </div>
+          <figure>
+            <img src="outputs/impact_2_tempo_loudness_hit_terrain.png" alt="Tempo and loudness terrain showing strong performance cluster" />
+            <figcaption>High-performing tracks tend to gather in a central tempo and loudness band instead of at the extremes.</figcaption>
+          </figure>
+        </article>
+
+        <article class="story-block">
+          <div class="story-copy">
+            <div class="rank">Impact 1 / 5</div>
+            <h3>Duration sweet spot</h3>
+            <p>
+              Duration matters, but not as much as genre mood or feature fit. It still provides a useful optimization clue for release planning.
+            </p>
+            <ul class="insight-list">
+              <li>The popularity sweet spot appears near 3.75 minutes.</li>
+              <li>The peak median popularity around this band is 38.0 in the plotted grouping.</li>
+              <li>Duration is a secondary lever, best used after genre and feature strategy are already aligned.</li>
+            </ul>
+          </div>
+          <figure>
+            <img src="outputs/impact_1_duration_sweet_spot.png" alt="Duration sweet spot plot showing popularity by track length" />
+            <figcaption>Track length contributes to performance, but it is a lighter signal than the main feature and genre patterns.</figcaption>
+          </figure>
+        </article>
+      </section>
+
+      <div class="section-heading" id="comparative">
+        <div>
+          <h2>Comparative views</h2>
+          <p>These two visuals add context around genre upside and explicit-content performance without changing the main ranking order above.</p>
+        </div>
+      </div>
+
+      <section class="two-col">
+        <article class="story-block">
+          <div class="story-copy">
+            <h3>Genre popularity spread</h3>
+            <p>
+              Among the top 15 genres, <strong>pop</strong> has the highest median popularity at 66.0 and also the widest interquartile spread at 69.0.
+            </p>
+            <p>
+              That means the genre offers both high upside and high dispersion, making it attractive but less uniform in outcomes.
+            </p>
+          </div>
+          <figure>
+            <img src="outputs/extra_genre_popularity_spread_top15.png" alt="Genre popularity spread comparison for top genres" />
+            <figcaption>Pop shows the highest center and the widest spread, signaling both opportunity and variability.</figcaption>
+          </figure>
+        </article>
+
+        <article class="story-block">
+          <div class="story-copy">
+            <h3>Explicit vs non-explicit</h3>
+            <p>
+              Explicit tracks have a higher median popularity by 3.0 points overall in this dataset snapshot.
+            </p>
+            <p>
+              This is a useful comparative signal, though it should be interpreted carefully because it may interact with genre, audience, and release context.
+            </p>
+          </div>
+          <figure>
+            <img src="outputs/extra_explicit_vs_nonexplicit_popularity.png" alt="Explicit versus non explicit popularity comparison" />
+            <figcaption>Explicit content shows a modest popularity edge overall, but not enough to override the stronger structural signals above.</figcaption>
+          </figure>
+        </article>
+      </section>
+
+      <section class="summary-box" id="recommendations">
+        <h2>What this means in practice</h2>
+        <ul>
+          <li><strong>For A&amp;R:</strong> prioritize artists who combine high average popularity with low volatility, not just isolated peaks.</li>
+          <li><strong>For production:</strong> use the danceability-energy hit zone and the central tempo-loudness band as directional benchmarks.</li>
+          <li><strong>For genre strategy:</strong> treat genre as a mood-positioning signal using energy and valence, not only as a label.</li>
+          <li><strong>For release planning:</strong> use duration as a final optimization lever after the bigger variables are aligned.</li>
+        </ul>
+      </section>
+
+      <footer>
+        Built from the Spotify tracks exploratory analysis project • <a href="outputs/findings_ranked_1_to_5.txt">Open raw findings text</a>
+      </footer>
     </div>
   </body>
 </html>

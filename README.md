@@ -4,14 +4,14 @@ A focused exploratory data analysis (EDA) project on a Spotify tracks dataset to
 
 ## Live Project Page
 
-Visit the published page here: [https://ian-qhamau.github.io/Spotify-tracks-EDA/](https://ian-qhamau.github.io/Spotify-tracks-EDA/)
+Visit the published story page here: [https://ian-qhamau.github.io/Spotify-tracks-EDA/](https://ian-qhamau.github.io/Spotify-tracks-EDA/)
 
 ## Project Snapshot
 
 - **Dataset:** `data/spotify tracks dataset.csv`
 - **Scale:** ~114k rows of tracks across many genres
 - **Core question:** Which combinations of genre, mood, artist consistency, and audio features align with higher popularity?
-- **Main output:** 7 visuals (5 ranked + 2 comparative) + findings text in `visualisations/outputs/`
+- **Main output:** a single-page HTML story supported by 7 visuals (5 ranked + 2 comparative) and findings text in `visualisations/outputs/`
 
 ## Repository Structure
 
