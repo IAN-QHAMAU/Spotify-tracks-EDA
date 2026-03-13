@@ -2,6 +2,10 @@
 
 A focused exploratory data analysis (EDA) project on a Spotify tracks dataset to discover what musical patterns are associated with track popularity.
 
+## Live Project Page
+
+Visit the published page here: [https://ian-qhamau.github.io/Spotify-tracks-EDA/](https://ian-qhamau.github.io/Spotify-tracks-EDA/)
+
 ## Project Snapshot
 
 - **Dataset:** `data/spotify tracks dataset.csv`
